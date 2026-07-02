@@ -1,0 +1,9 @@
+port: 9000
+
+tick_rate: 20
+
+max_players: 1000
+
+max_rooms: 100
+
+log_level: debug

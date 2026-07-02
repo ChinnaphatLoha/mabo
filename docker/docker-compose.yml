@@ -1,0 +1,7 @@
+services:
+  game-server:
+    build:
+      context: ../server
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
