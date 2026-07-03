@@ -58,7 +58,7 @@ func (s *UDPServer) Start(ctx context.Context) error {
 	}
 
 	s.logger.Info("network listener started",
-		loggerToAttr("address", s.cfg.BindAddress),
+		"address", s.cfg.BindAddress,
 	)
 
 	buffer := make([]byte, s.cfg.ReadBufferSize)
@@ -84,8 +84,8 @@ func (s *UDPServer) Start(ctx context.Context) error {
 		}
 
 		s.logger.Debug("udp packet received",
-			loggerToAttr("remote", remote.String()),
-			loggerToAttr("size", n),
+			"remote", remote.String(),
+			"size", n,
 		)
 
 		if n == 0 {
@@ -106,8 +106,4 @@ func (s *UDPServer) Stop(ctx context.Context) error {
 		return nil
 	}
 	return s.conn.Close()
-}
-
-func loggerToAttr(key string, value interface{}) interface{} {
-	return value
 }

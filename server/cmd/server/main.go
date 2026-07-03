@@ -21,9 +21,11 @@ func main() {
 	log := logger.New(cfg.LogLevel)
 	log.Info("starting server", "bind_address", cfg.BindAddress, "port", cfg.Port)
 
+	handler := network.NewDefaultHandler(log)
+
 	networkServer := network.NewUDPServer(network.Config{
 		BindAddress: cfg.BindAddress,
-	}, nil, log)
+	}, handler, log)
 
 	app := app.New(cfg, log, networkServer)
 
