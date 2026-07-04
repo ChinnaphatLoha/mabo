@@ -17,6 +17,7 @@ type PacketHandler interface {
 type Server interface {
 	Start(ctx context.Context) error
 	Stop(ctx context.Context) error
+	Send(target net.Addr, pkt packet.Packet) error
 }
 
 type Config struct {
@@ -106,4 +107,28 @@ func (s *UDPServer) Stop(ctx context.Context) error {
 		return nil
 	}
 	return s.conn.Close()
+}
+
+func (s *UDPServer) Send(target net.Addr, pkt packet.Packet) error {
+	if s.conn == nil {
+		return errors.New("network not started")
+	}
+
+	// Build buffer: first byte is packet ID, remaining is payload
+	buf := make([]byte, 1+len(pkt.Payload))
+	buf[0] = byte(pkt.ID)
+	copy(buf[1:], pkt.Payload)
+
+	udpAddr, ok := target.(*net.UDPAddr)
+	if !ok {
+		// Try to resolve from string
+		var err error
+		udpAddr, err = net.ResolveUDPAddr("udp", target.String())
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err := s.conn.WriteToUDP(buf, udpAddr)
+	return err
 }
