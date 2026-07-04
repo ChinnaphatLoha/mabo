@@ -18,16 +18,17 @@ const (
 	PacketIDRoomJoined        ID = 23
 	PacketIDLeaveRoomRequest  ID = 24
 	PacketIDRoomLeft          ID = 25
+	PacketIDErrorResponse     ID = 49
 
 	// Movement / gameplay
-	PacketIDMovementInput ID = 30
-
-	// Spawn / entity
-	PacketIDPlayerSpawned      ID = 31
-	PacketIDPlayerDisconnected ID = 32
+	PacketIDMovementInput ID = 150
 
 	// Snapshots
-	PacketIDSnapshot ID = 40
+	PacketIDSnapshot ID = 200
+
+	// Spawn / entity
+	PacketIDPlayerSpawned      ID = 250
+	PacketIDPlayerDisconnected ID = 251
 
 	// Ping
 	PacketIDPing ID = 100
@@ -45,6 +46,32 @@ func (id ID) String() string {
 		return "Connect"
 	case PacketIDDisconnect:
 		return "Disconnect"
+	case PacketIDLoginRequest:
+		return "LoginRequest"
+	case PacketIDLoginResponse:
+		return "LoginResponse"
+	case PacketIDCreateRoomRequest:
+		return "CreateRoomRequest"
+	case PacketIDRoomCreated:
+		return "RoomCreated"
+	case PacketIDJoinRoomRequest:
+		return "JoinRoomRequest"
+	case PacketIDRoomJoined:
+		return "RoomJoined"
+	case PacketIDLeaveRoomRequest:
+		return "LeaveRoomRequest"
+	case PacketIDRoomLeft:
+		return "RoomLeft"
+	case PacketIDErrorResponse:
+		return "ErrorResponse"
+	case PacketIDMovementInput:
+		return "MovementInput"
+	case PacketIDSnapshot:
+		return "Snapshot"
+	case PacketIDPlayerSpawned:
+		return "PlayerSpawned"
+	case PacketIDPlayerDisconnected:
+		return "PlayerDisconnected"
 	case PacketIDPing:
 		return "Ping"
 	case PacketIDPong:

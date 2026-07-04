@@ -1,7 +1,15 @@
 package session
 
-// Session represents a player's connection session.
-// This package will hold connection and session lifecycle.
+import (
+	"net"
+	"time"
+)
+
+// Session represents a connected client's in-memory guest session.
 type Session struct {
-	ID string
+	ID        string
+	PlayerID  string
+	GuestName string
+	Addr      net.Addr
+	LastSeen  time.Time
 }

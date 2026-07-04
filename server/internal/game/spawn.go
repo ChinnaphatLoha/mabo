@@ -8,15 +8,15 @@ type SpawnPoint struct {
 	Y float64 `json:"y"`
 }
 
-// SpawnEntity returns a simple generated entity ID for a spawn.
-func SpawnEntity(entityType string, pt SpawnPoint) string {
-	return fmt.Sprintf("%s-%.0f-%.0f", entityType, pt.X, pt.Y)
+// SpawnEntity returns a deterministic player entity ID.
+func SpawnEntity(entityType string, playerID string) string {
+	return fmt.Sprintf("%s-%s", entityType, playerID)
 }
 
-// ChooseSpawn chooses a spawn point for a team.
-func ChooseSpawn(team int) SpawnPoint {
+// ChooseSpawn chooses a deterministic spawn point for a team slot.
+func ChooseSpawn(team int, index int) SpawnPoint {
 	if team == 0 {
-		return SpawnPoint{X: 0, Y: 0}
+		return SpawnPoint{X: float64(index * 2), Y: 0}
 	}
-	return SpawnPoint{X: 10, Y: 0}
+	return SpawnPoint{X: 100 + float64(index*2), Y: 0}
 }
