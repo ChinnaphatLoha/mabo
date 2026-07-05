@@ -19,10 +19,10 @@ func _process(_delta: float) -> void:
 	fps_label.text = "FPS: " + str(Engine.get_frames_per_second())
 	
 	# Send ping every second
-	if Time.get_ticks_msec() - last_ping_sent > 1000:
-		last_ping_sent = Time.get_ticks_msec()
-		if network and network.is_connected_to_server:
-			network.send_packet(100, {"timestamp": last_ping_sent})
+	# if Time.get_ticks_msec() - last_ping_sent > 1000:
+	# 	last_ping_sent = Time.get_ticks_msec()
+	# 	if network and network.is_connected_to_server:
+	# 		network.send_packet(100, {"timestamp": last_ping_sent})
 
 # A complete implementation would handle Pong packets (ID 101) to calculate true RTT.
 # For demo purposes, we will just display the tick from the last snapshot.

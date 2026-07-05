@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://dfb1q5r0w7y9x"]
+
+[ext_resource type="Script" path="res://scripts/GameManager.gd" id="1_gm"]
+[ext_resource type="Script" path="res://scripts/DebugUI.gd" id="2_dbg"]
+
+[node name="Main" type="Node2D"]
+
+[node name="GameManager" type="Node2D" parent="."]
+script = ExtResource("1_gm")
+
+[node name="DebugUI" type="CanvasLayer" parent="."]
+script = ExtResource("2_dbg")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DebugUI"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FPSLabel" type="Label" parent="DebugUI/VBoxContainer"]
+layout_mode = 2
+text = "FPS: 0"
+
+[node name="PingLabel" type="Label" parent="DebugUI/VBoxContainer"]
+layout_mode = 2
+text = "Ping: 0"
+
+[node name="RTTLabel" type="Label" parent="DebugUI/VBoxContainer"]
+layout_mode = 2
+text = "RTT: 0"
+
+[node name="TickLabel" type="Label" parent="DebugUI/VBoxContainer"]
+layout_mode = 2
+text = "Tick: 0"

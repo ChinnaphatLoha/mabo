@@ -43,6 +43,10 @@ func NewUDPServer(cfg Config, handler PacketHandler, logger *logger.Logger) *UDP
 	}
 }
 
+func (s *UDPServer) SetHandler(handler PacketHandler) {
+	s.handler = handler
+}
+
 func (s *UDPServer) Start(ctx context.Context) error {
 	if s.handler == nil {
 		return errors.New("packet handler is required")

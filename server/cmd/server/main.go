@@ -64,8 +64,8 @@ func main() {
 		pktHandler = network.NewSimulatedHandler(handler, latencyMs)
 	}
 
-	// Re-create network server with the real handler.
-	networkServer = network.NewUDPServer(netCfg, pktHandler, log)
+	// Set the handler on the already-created network server.
+	networkServer.SetHandler(pktHandler)
 
 	// ── Interest manager & tick loop ───────────────────────────────────────
 	interest := system.BroadcastInterestManager{}

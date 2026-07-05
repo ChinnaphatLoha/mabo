@@ -363,16 +363,6 @@ stateDiagram-v2
     MatchPlaying --> [*] : Disconnect
 ```
 
-### Suggested Git Commit Messages
-```bash
-feat(server): add input queueing and sequence tracking
-feat(server): add network latency simulator
-feat(client): implement godot 4 udp network singleton
-feat(client): implement client prediction and reconciliation
-feat(client): implement remote player interpolation buffer
-docs: add comprehensive movement and networking analysis
-```
-
 ### Technical Debt and Future Improvements
 1. **Delta Compression**: Currently, the server sends the full state of all players every tick. We need Delta Snapshots.
 2. **True Clock Sync**: The client needs an NTP-style ping exchange to perfectly sync its simulation clock with the server's monotonic tick.

@@ -2,7 +2,7 @@ extends Node2D
 class_name PlayerController
 
 var player_id := ""
-var speed := 5.0
+var speed := 300.0
 
 var current_sequence := 0
 var pending_inputs := []
@@ -19,7 +19,14 @@ func _physics_process(delta: float) -> void:
 		return
 		
 	# 1. Sample input
-	var input_vector := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var move_x := 0.0
+	var move_y := 0.0
+	if Input.is_physical_key_pressed(KEY_W) or Input.is_action_pressed("ui_up"): move_y -= 1.0
+	if Input.is_physical_key_pressed(KEY_S) or Input.is_action_pressed("ui_down"): move_y += 1.0
+	if Input.is_physical_key_pressed(KEY_A) or Input.is_action_pressed("ui_left"): move_x -= 1.0
+	if Input.is_physical_key_pressed(KEY_D) or Input.is_action_pressed("ui_right"): move_x += 1.0
+	var input_vector := Vector2(move_x, move_y).normalized()
+	
 	var rotation_val := rotation
 	
 	current_sequence += 1
@@ -55,7 +62,7 @@ func _on_snapshot_received(snapshot: Dictionary) -> void:
 			my_state = p
 			break
 			
-	if my_state == nil:
+	if my_state == null:
 		return
 		
 	var server_pos = Vector2(my_state["position"]["x"], my_state["position"]["y"])

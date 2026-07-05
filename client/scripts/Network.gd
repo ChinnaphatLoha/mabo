@@ -9,6 +9,8 @@ const PACKET_CONNECT = 1
 const PACKET_LOGIN_REQ = 10
 const PACKET_LOGIN_RESP = 11
 const PACKET_ERROR_RESP = 49
+const PACKET_ROOM_CREATED = 21
+const PACKET_ROOM_JOINED = 23
 const PACKET_MOVEMENT = 150
 const PACKET_SNAPSHOT = 200
 const PACKET_PLAYER_SPAWNED = 250
@@ -31,7 +33,7 @@ func connect_to_server():
 	var req = {"guest_name": "GodotClient"}
 	send_packet(PACKET_LOGIN_REQ, req)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if udp.get_available_packet_count() > 0:
 		for i in range(udp.get_available_packet_count()):
 			var packet_bytes = udp.get_packet()
@@ -70,7 +72,7 @@ func handle_packet(bytes: PackedByteArray):
 			is_connected_to_server = true
 			
 			# Auto-create room for demo
-			send_packet(20, {"capacity": 10}) 
+			send_packet(20, {"capacity": 1}) # 20 is CreateRoomRequest
 			connected_to_server.emit()
 		PACKET_ROOM_CREATED, 21:
 			print("Room created")

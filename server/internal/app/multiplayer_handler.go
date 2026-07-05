@@ -189,7 +189,7 @@ func (h *MultiplayerHandler) handleCreateRoom(source net.Addr, pkt packet.Packet
 	_ = protocol.Unmarshal(pkt.Payload, &req) // capacity omitempty – ok to ignore error
 
 	capacity := req.Capacity
-	if capacity < 2 || capacity > 10 {
+	if capacity < 1 || capacity > 10 {
 		capacity = 10
 	}
 
