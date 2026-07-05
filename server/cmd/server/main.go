@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/ChinnaphatLoha/mabo/server/internal/app"
@@ -35,25 +36,40 @@ func main() {
 	inputs := command.NewInputBuffer()
 
 	// ── Network ────────────────────────────────────────────────────────────
-	// The UDP server is created first so it can be passed as the Sender.
-	// The handler is wired after so it has a reference to the live server.
 	netCfg := network.Config{BindAddress: cfg.BindAddress}
-	// Placeholder handler lets us pass the server to the multiplayer handler.
-	// The real handler is set below once all managers are constructed.
 	networkServer := network.NewUDPServer(netCfg, nil, log)
+
+	var sender app.Sender = networkServer
+
+	latencyMs := 0
+	if val := os.Getenv("LATENCY_MS"); val != "" {
+		if parsed, err := strconv.Atoi(val); err == nil {
+			latencyMs = parsed
+			log.Info("network latency simulation enabled", "latency_ms", latencyMs)
+		}
+	}
+
+	if latencyMs > 0 {
+		sender = network.NewSimulatedSender(networkServer, latencyMs)
+	}
 
 	// ── Application handler ────────────────────────────────────────────────
 	handler := app.NewMultiplayerHandler(
 		sessions, rooms, matches, w, inputs,
-		networkServer, log,
+		sender, log,
 	)
 
+	var pktHandler network.PacketHandler = handler
+	if latencyMs > 0 {
+		pktHandler = network.NewSimulatedHandler(handler, latencyMs)
+	}
+
 	// Re-create network server with the real handler.
-	networkServer = network.NewUDPServer(netCfg, handler, log)
+	networkServer = network.NewUDPServer(netCfg, pktHandler, log)
 
 	// ── Interest manager & tick loop ───────────────────────────────────────
 	interest := system.BroadcastInterestManager{}
-	tickLoop := app.NewTickLoop(sessions, matches, w, inputs, interest, networkServer, log)
+	tickLoop := app.NewTickLoop(sessions, matches, w, inputs, interest, sender, log)
 
 	// ── Application lifecycle ──────────────────────────────────────────────
 	application := app.New(cfg, log, networkServer)

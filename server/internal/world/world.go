@@ -27,10 +27,11 @@ type PlayerEntity struct {
 	RoomID         string
 	Team           int
 	Position       Vec2
-	Rotation       float64
-	Velocity       Vec2
-	AnimationState string
-	HP             int
+	Rotation              float64
+	Velocity              Vec2
+	AnimationState        string
+	HP                    int
+	LastProcessedSequence uint32
 }
 
 type Snapshot struct {
@@ -44,10 +45,11 @@ type SnapshotPlayer struct {
 	EntityID       string
 	Team           int
 	Position       Vec2
-	Rotation       float64
-	Velocity       Vec2
-	AnimationState string
-	HP             int
+	Rotation              float64
+	Velocity              Vec2
+	AnimationState        string
+	HP                    int
+	LastProcessedSequence uint32
 }
 
 type World struct {
@@ -102,6 +104,11 @@ func (w *World) ApplyInputs(inputs []command.Input, deltaSeconds float64) {
 			continue
 		}
 
+		// Discard inputs that have already been processed or are out of order
+		if input.Sequence <= entity.LastProcessedSequence {
+			continue
+		}
+		
 		dirX, dirY := normalized(input.MoveX, input.MoveY)
 		entity.Velocity = Vec2{X: dirX * PlayerMoveSpeed, Y: dirY * PlayerMoveSpeed}
 		entity.Position.X += entity.Velocity.X * deltaSeconds
@@ -112,6 +119,8 @@ func (w *World) ApplyInputs(inputs []command.Input, deltaSeconds float64) {
 		} else {
 			entity.AnimationState = AnimationRun
 		}
+		
+		entity.LastProcessedSequence = input.Sequence
 	}
 }
 
@@ -132,9 +141,10 @@ func (w *World) Snapshot(matchID string, tick uint64) (Snapshot, bool) {
 			Team:           entity.Team,
 			Position:       entity.Position,
 			Rotation:       entity.Rotation,
-			Velocity:       entity.Velocity,
-			AnimationState: entity.AnimationState,
-			HP:             entity.HP,
+			Velocity:              entity.Velocity,
+			AnimationState:        entity.AnimationState,
+			HP:                    entity.HP,
+			LastProcessedSequence: entity.LastProcessedSequence,
 		})
 	}
 	sort.Slice(players, func(i, j int) bool {
@@ -164,9 +174,10 @@ func (w *World) Snapshots(tick uint64) []Snapshot {
 				Team:           entity.Team,
 				Position:       entity.Position,
 				Rotation:       entity.Rotation,
-				Velocity:       entity.Velocity,
-				AnimationState: entity.AnimationState,
-				HP:             entity.HP,
+				Velocity:              entity.Velocity,
+				AnimationState:        entity.AnimationState,
+				HP:                    entity.HP,
+				LastProcessedSequence: entity.LastProcessedSequence,
 			})
 		}
 		sort.Slice(players, func(i, j int) bool {

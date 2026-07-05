@@ -1,6 +1,9 @@
 package command
 
-import "sync"
+import (
+	"sort"
+	"sync"
+)
 
 type Input struct {
 	PlayerID string
@@ -12,11 +15,11 @@ type Input struct {
 
 type InputBuffer struct {
 	mu     sync.Mutex
-	inputs map[string]Input
+	inputs map[string][]Input
 }
 
 func NewInputBuffer() *InputBuffer {
-	return &InputBuffer{inputs: make(map[string]Input)}
+	return &InputBuffer{inputs: make(map[string][]Input)}
 }
 
 func (b *InputBuffer) Add(input Input) {
@@ -27,21 +30,35 @@ func (b *InputBuffer) Add(input Input) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
-	current, exists := b.inputs[input.PlayerID]
-	if exists && input.Sequence < current.Sequence {
-		return
-	}
-	b.inputs[input.PlayerID] = input
+	// Append to player's queue
+	b.inputs[input.PlayerID] = append(b.inputs[input.PlayerID], input)
 }
 
 func (b *InputBuffer) Drain() []Input {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
-	inputs := make([]Input, 0, len(b.inputs))
-	for _, input := range b.inputs {
-		inputs = append(inputs, input)
+	var allInputs []Input
+	for playerID, playerInputs := range b.inputs {
+		// Sort by sequence to ensure they are processed in order
+		sort.Slice(playerInputs, func(i, j int) bool {
+			return playerInputs[i].Sequence < playerInputs[j].Sequence
+		})
+		
+		// Remove duplicates
+		if len(playerInputs) > 0 {
+			uniqueInputs := []Input{playerInputs[0]}
+			for i := 1; i < len(playerInputs); i++ {
+				if playerInputs[i].Sequence != uniqueInputs[len(uniqueInputs)-1].Sequence {
+					uniqueInputs = append(uniqueInputs, playerInputs[i])
+				}
+			}
+			allInputs = append(allInputs, uniqueInputs...)
+		}
+		
+		// Clear player's queue after draining
+		delete(b.inputs, playerID)
 	}
-	b.inputs = make(map[string]Input)
-	return inputs
+
+	return allInputs
 }

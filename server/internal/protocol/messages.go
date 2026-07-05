@@ -81,10 +81,11 @@ type SnapshotPlayer struct {
 	EntityID       string `json:"entity_id"`
 	Team           int    `json:"team"`
 	Position       Vec2   `json:"position"`
-	Rotation       float64 `json:"rotation"`
-	Velocity       Vec2   `json:"velocity"`
-	AnimationState string `json:"animation_state"`
-	HP             int    `json:"hp"`
+	Rotation               float64 `json:"rotation"`
+	Velocity               Vec2   `json:"velocity"`
+	AnimationState         string `json:"animation_state"`
+	HP                     int    `json:"hp"`
+	LastProcessedSequence  uint32 `json:"last_processed_sequence"`
 }
 
 type ErrorResponse struct {
